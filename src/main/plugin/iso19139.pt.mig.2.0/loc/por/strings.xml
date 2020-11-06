@@ -53,8 +53,8 @@
   <referenceSystemInfo>Sistema de Referência</referenceSystemInfo>
   <contentInfo>Conteúdo</contentInfo>
   <portrayalCatalogueInfo>Representação</portrayalCatalogueInfo>
-  <metadataConstraints>Restrições de metadados</metadataConstraints>
-  <metadataMaintenance>Manutenção de metadados</metadataMaintenance>
+  <metadataConstraints>Restrições dos metadados</metadataConstraints>
+  <metadataMaintenance>Manutenção dos metadados</metadataMaintenance>
   <applicationSchemaInfo>Informações do esquema</applicationSchemaInfo>
   <noThesaurusName>palavra-chave</noThesaurusName>
   <bboxesSection>cobertura geográfica</bboxesSection>
