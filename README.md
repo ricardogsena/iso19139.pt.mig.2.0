@@ -1,32 +1,34 @@
-# Implementação do Schema para o Perfil Nacional de Metadados de Informação Geográfica (MIG) schema plugin
+# Implementação do schema plugin de GeoNetwork para o Perfil Nacional de Metadados de Informação Geográfica (MIG)
 
-Implementação do Schema para o Perfil Nacional de Metadados de Informação Geográfica (MIG)
+Implementação do schema plugin do GeoNework para o Perfil Nacional de Metadados de Informação Geográfica (MIG). Tendo como base o schema iso19139, implementa as regras de validação específicas do Perfil MIG e adiciona novos campos à indexação da informação dos metadados, de forma a permitir suportar as pesquisas que são disponibilizadas através do Registo Nacional de Dados Geográficos.
 
-## Installing the plugin
+## Instalação do schema plugin
 
-### GeoNetwork version to use with this plugin
+### Versão do GeoNetwork a utilizar com este plugin
 
-Use GeoNetwork 3.4+. It's not supported in older versions so don't plug it into it!
+Este schema plugin foi desenvolvido para o GeoNetwork 3.4+, não se recomenda a sua utilização com outras versões.
 
-### Adding the plugin to the source code
+### Adicionar o schema plugin ao código fonte
 
-The best approach is to add the plugin as a submodule into GeoNetwork schema module.
-
+A versão adaptada do GeoNetwork para o SNIG (https://github.com/ricardogsena/core-geonetwork.git) adiciona automaticamente este schema plugin como um submódulo do projeto, pelo que apenas é necessário seguir as instruções de instalação dessa versão. No entanto, este schema plugin pode também ser utilizado na versão base GeoNetwork 3.4+, descrevendo-se em seguinte as passos a realizar para fazer a sua integração nessa versão: 
+1. Mudar para a pasta *schemas*
 ```
-cd schemas
-git submodule add -b 3.4.x https://github.com/metadata101/iso19139.pt.mig.2.0 iso19139.pt.mig.2.0
+$ cd core-geonetwork/schemas
 ```
-
-Add the new module to the schema/pom.xml:
-
+2. Adicionar o schema plugin como um submódulo do módulo *schemas* 
 ```
+git submodule add -b 3.4.x https://github.com/ricardogsena/iso19139.pt.mig.2.0.git iso19139.pt.mig.2.0
+```
+3. Adicionar o novo submódulo ao ficheiro pom.xml do módulo *schemas* (core-geonetwork/schemas/pom.xml):
+```
+<modules>
+  ...
   <module>iso19139</module>
-  <module>iso19139.pt.mig.2.0</module>
+  **<module>iso19139.pt.mig.2.0</module>**
 </modules>
 ```
-
+4. Adicionar a dependência ao módulo *web* (core-geonetwork/web/pom.xml) 
 Add the dependency in the web module in web/pom.xml:
-
 ```
 <dependency>
   <groupId>${project.groupId}</groupId>
@@ -34,9 +36,7 @@ Add the dependency in the web module in web/pom.xml:
   <version>${gn.schemas.version}</version>
 </dependency>
 ```
-
-Add the module to the webapp in web/pom.xml:
-
+5. Adicionar o módulo à *webapp* (core-geonetwork/web/pom.xml):
 ```
 <execution>
   <id>copy-schemas</id>
@@ -48,35 +48,22 @@ Add the module to the webapp in web/pom.xml:
   </resource>
 ```
 
-### Adding editor configuration
+### Fazer o *build* da aplicação
 
-Editor configuration in GeoNetwork 3.4.x is done in `schemas/iso19139.pt.mig.2.0/src/main/plugin/iso19139.pt.mig.2.0/layout/config-editor.xml` inside each view. Default values are the following:
-
-      <sidePanel>
-        <directive data-gn-onlinesrc-list=""/>
-        <directive gn-geo-publisher=""
-                   data-ng-if="gnCurrentEdit.geoPublisherConfig"
-                   data-config="{{gnCurrentEdit.geoPublisherConfig}}"
-                   data-lang="lang"/>
-        <directive data-gn-validation-report=""/>
-        <directive data-gn-suggestion-list=""/>
-        <directive data-gn-need-help="user-guide/describing-information/creating-metadata.html"/>
-      </sidePanel>
-
-### Build the application 
-
-Once the application is build, the war file contains the schema plugin:
-
+Como resultado do *build* da aplicação, é produzido o ficheiro **war** que contém o schema plugin (core-geonetwork/schemas/iso19139.pt.mig.2.0/target/schema-iso19139.pt.mig.2.0-3.4.jar):
+1. Mudar para a pasta do schema plugin
+```
+$ cd core-geonetwork/schemas/iso19139.pt.mig.2.0
+```
+2. Fazer build 
 ```
 $ mvn clean install -Penv-prod
 ```
 
-### Deploy the profile in an existing installation
+### Instalar o schema plugin numa instalação existente do GeoNetwork
 
-After building the application, it's possible to deploy the schema plugin manually in an existing GeoNetwork installation:
+Depois de realizado o *build* da aplicação, é possível copiar o manualmente o schema plugin para uma instalação existente do GeoNework (recomenda-se que seja na versão 3.4+):
 
-- Copy the content of the folder schemas/iso19139.pt.mig.2.0/src/main/plugin to INSTALL_DIR/geonetwork/WEB-INF/data/config/schema_plugins/iso19139.pt.mig.2.0
-
-- Copy the jar file schemas/iso19139.pt.mig.2.0/target/schema-iso19139.pt.mig.2.0-3.4.jar to INSTALL_DIR/geonetwork/WEB-INF/lib.
-
-If there's no changes to the profile Java code or the configuration (config-spring-geonetwork.xml), the jar file is not required to be deployed each time.
+- Copiar o conteúdo conteúdo da pasta core-geonetwork/schemas/iso19139.pt.mig.2.0/src/main/plugin para GEONETWORK_DIR/WEB-INF/data/config/schema_plugins/iso19139.pt.mig.2.0
+- Copiar o ficheiro **jar** core-geonetwork/schemas/iso19139.pt.mig.2.0/target/schema-iso19139.pt.mig.2.0-3.4.jar para GEONETWORK_DIR/WEB-INF/lib.
+- Reiniciar o serviço
